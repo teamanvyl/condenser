@@ -42,8 +42,8 @@ class PsqlDatabaseCreator:
             if pg_dump_path != '':
                 os.chdir(pg_dump_path)
 
-            connection = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(self.source_dbc.user, urllib.parse.urlencode({'password': self.source_dbc.password}), self.source_dbc.host, self.source_dbc.port, self.source_dbc.db_name)
-
+            #connection = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(self.source_dbc.user, urllib.parse.urlencode({'password': self.source_dbc.password}), self.source_dbc.host, self.source_dbc.port, self.source_dbc.db_name)
+            connection = 'sslmode=disable host={0} dbname={1} user={2} password={3}'.format(self.source_dbc.host, self.source_dbc.db_name, self.source_dbc.user, self.source_dbc.password)
             result = subprocess.run(['pg_dump', connection, '--schema-only', '--no-owner', '--no-privileges', '--section=pre-data']
                     , stdout = subprocess.PIPE, stderr = subprocess.PIPE)
             if result.returncode != 0 or contains_errors(result.stderr):
@@ -76,7 +76,8 @@ class PsqlDatabaseCreator:
             pg_dump_path = get_pg_bin_path()
             if pg_dump_path != '':
                 os.chdir(pg_dump_path)
-            connection = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(self.source_dbc.user, urllib.parse.urlencode({'password': self.source_dbc.password}), self.source_dbc.host, self.source_dbc.port, self.source_dbc.db_name)
+            #connection = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(self.source_dbc.user, urllib.parse.urlencode({'password': self.source_dbc.password}), self.source_dbc.host, self.source_dbc.port, self.source_dbc.db_name)
+            connection = 'sslmode=disable host={0} dbname={1} user={2} password={3}'.format(self.source_dbc.host, self.source_dbc.db_name, self.source_dbc.user, self.source_dbc.password)
             result = subprocess.run(['pg_dump', connection, '--schema-only', '--no-owner', '--no-privileges', '--section=post-data']
                     , stderr = subprocess.PIPE, stdout = subprocess.PIPE)
             if result.returncode != 0 or contains_errors(result.stderr):
@@ -116,11 +117,10 @@ class PsqlDatabaseCreator:
             os.chdir(pg_dump_path)
 
         connection_info = self.destination_dbc
-        connection_string = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(
-                    connection_info.user, urllib.parse.urlencode({'password': connection_info.password}), connection_info.host,
-                    connection_info.port, connection_info.db_name)
-
-
+        # connection_string = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(
+        #             connection_info.user, urllib.parse.urlencode({'password': connection_info.password}), connection_info.host,
+        #             connection_info.port, connection_info.db_name)
+        connection_string = 'sslmode=disable host={0} dbname={1} user={2} password={3}'.format(self.source_dbc.host, self.source_dbc.db_name, self.source_dbc.user, self.source_dbc.password)
         result = subprocess.run(['psql', connection_string, '-c {0}'.format(query)], stderr = subprocess.PIPE, stdout = subprocess.DEVNULL)
         if result.returncode != 0 or contains_errors(result.stderr):
             raise Exception('Running query: "{}" failed. Details:\n{}'.format(query, result.stderr))
@@ -136,9 +136,10 @@ class PsqlDatabaseCreator:
             os.chdir(pg_dump_path)
 
         connect = self.destination_dbc
-        connection_string = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(
-            connect.user, urllib.parse.urlencode({'password': connect.password}), connect.host,
-            connect.port, connect.db_name)
+        # connection_string = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(
+        #     connect.user, urllib.parse.urlencode({'password': connect.password}), connect.host,
+        #     connect.port, connect.db_name)
+        connection_string = 'sslmode=disable host={0} dbname={1} user={2} password={3}'.format(self.source_dbc.host, self.source_dbc.db_name, self.source_dbc.user, self.source_dbc.password)
 
         input = queries.encode('utf-8')
         result = subprocess.run(['psql', connection_string], stderr = subprocess.PIPE, input = input, stdout= subprocess.DEVNULL)
