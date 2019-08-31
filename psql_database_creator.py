@@ -120,7 +120,7 @@ class PsqlDatabaseCreator:
         # connection_string = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(
         #             connection_info.user, urllib.parse.urlencode({'password': connection_info.password}), connection_info.host,
         #             connection_info.port, connection_info.db_name)
-        connection_string = 'sslmode=disable host={0} dbname={1} user={2} password={3}'.format(self.source_dbc.host, self.source_dbc.db_name, self.source_dbc.user, self.source_dbc.password)
+        connection_string = 'sslmode=disable host={0} dbname={1} user={2} password={3}'.format(connection_info.host, connection_info.db_name, connection_info.user, connection_info.password)
         result = subprocess.run(['psql', connection_string, '-c {0}'.format(query)], stderr = subprocess.PIPE, stdout = subprocess.DEVNULL)
         if result.returncode != 0 or contains_errors(result.stderr):
             raise Exception('Running query: "{}" failed. Details:\n{}'.format(query, result.stderr))
@@ -139,7 +139,7 @@ class PsqlDatabaseCreator:
         # connection_string = '--dbname=postgresql://{0}@{2}:{3}/{4}?{1}'.format(
         #     connect.user, urllib.parse.urlencode({'password': connect.password}), connect.host,
         #     connect.port, connect.db_name)
-        connection_string = 'sslmode=disable host={0} dbname={1} user={2} password={3}'.format(self.source_dbc.host, self.source_dbc.db_name, self.source_dbc.user, self.source_dbc.password)
+        connection_string = 'sslmode=disable host={0} dbname={1} user={2} password={3}'.format(connect.host, connect.db_name, connect.user, connect.password)
 
         input = queries.encode('utf-8')
         result = subprocess.run(['psql', connection_string], stderr = subprocess.PIPE, input = input, stdout= subprocess.DEVNULL)
